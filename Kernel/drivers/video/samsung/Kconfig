@@ -175,3 +175,10 @@ config FB_S3C_CMC623
 	---help---
 	This enables support for Samsung CMC623 feature
  
+config FB_S3C_BOOTMODE_LOGO
+        bool "Boot logo varied by boot mode"
+        depends on FB_S3C
+	default n
+	---help---
+	  Vary the boot logo based on boot mode.  A different boot splash is shown when booting into recovery mode.
+

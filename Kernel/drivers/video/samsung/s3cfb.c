@@ -141,6 +141,21 @@ extern int get_boot_charger_info(void);
 #include "logo_rgb24_wvga_portrait_docomo.h"
 #endif
 
+#if defined(CONFIG_FB_S3C_BOOTMODE_LOGO)
+#include "recovery_logo_rgb24_wvga_portrait.h"
+
+static int recovery_bootmode = 0;
+
+static int __init set_bootmode(char *str)
+{
+	if(strcmp(str, "=2") == 0)
+		recovery_bootmode = 1;
+	return 1;
+}
+
+__setup("bootmode", set_bootmode);
+#endif
+
 static int s3cfb_draw_logo(struct fb_info *fb)
 {
 	int ret=0;
@@ -150,11 +165,15 @@ static int s3cfb_draw_logo(struct fb_info *fb)
 
 	ret = get_boot_charger_info();
 
-	if(ret){
+	if(ret) {
 		memcpy(fbdev->fb[pdata->default_win]->screen_base, \
 				charging, fix->line_length * var->yres);
-	}
-	else{
+#if defined(CONFIG_FB_S3C_BOOTMODE_LOGO)
+	} else if(recovery_bootmode) {
+		memcpy(fbdev->fb[pdata->default_win]->screen_base, \
+				RECOVERY_LOGO_RGB24, fix->line_length * var->yres);
+#endif
+	} else {
 		memcpy(fbdev->fb[pdata->default_win]->screen_base, \
 				LOGO_RGB24, fix->line_length * var->yres);
 	}
